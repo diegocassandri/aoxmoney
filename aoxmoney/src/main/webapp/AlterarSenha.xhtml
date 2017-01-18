@@ -1,0 +1,71 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<ui:define name="titulo">- Alterar Senha - </ui:define>
+
+	<ui:param name="activeMenu" value="dashboard" />
+
+	<pe:blockUI widgetVar="loadingBlock" target="principal">
+		<p:graphicImage width="32" height="32" library="image"
+			name="loading.gif" />
+	</pe:blockUI>
+	
+	<ui:define name="breadcrumb">
+		<li><p:link href="/AlteraSenha.xhtml">
+							<i class="fa fa-user"></i>
+                               Alterar Senha
+                            </p:link></li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+		<!-- Main content -->
+		<section class="content">
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+				<div class="box box-primary">
+					
+					<div class="box-body">
+						<div class="box-body row">
+							<div class="form-group col-md-12">
+								<p:outputLabel for="senha" value="Senha Atual: " />
+								<p:password id="senha" styleClass="form-control"
+									value="#{utilBean.senhaAtual}" /> 
+
+							</div>
+							<div class="form-group col-md-12">
+								<p:outputLabel for="novaSenha" value="Nova Senha: " />
+								<p:password id="novaSenha" styleClass="form-control"
+									value="#{utilBean.novaSenha}" />
+
+							</div>
+							<div class="form-group col-md-12">
+								<p:outputLabel for="novaSenha2" value="Repetir Senha: " />
+								<p:password id="novaSenha2" styleClass="form-control"
+									value="#{utilBean.novaSenha2}" />
+
+							</div>
+						</div>
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton value="Salvar"
+							action="#{utilBean.alterarSenha}"
+							styleClass="btn btn-success" update="msgs" process="@form"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+						</p:commandButton>
+					</div>
+				</div>
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

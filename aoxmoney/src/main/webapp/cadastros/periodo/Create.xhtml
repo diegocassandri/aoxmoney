@@ -1,0 +1,88 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{cadastroPeriodoBean.periodoEdicao}" />
+		<f:viewAction action="#{cadastroPeriodoBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Período</ui:define>
+
+	<ui:param name="activeMenu" value="periodo" />
+
+	<ui:param name="activeSubMenu" value="periodo" />
+	
+	<ui:define name="descricao"> Período </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li><h:link outcome="/cadastros/periodo/List.xhtml">
+					Consulta Períodos
+				</h:link></li>
+
+				<li class="active">Novo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-12">
+							<p:outputLabel for="codigo" value="Código: " />
+							<p:inputText id="codigo" readonly="true"
+								styleClass="form-control"
+								value="#{cadastroPeriodoBean.periodoEdicao.codigo}" />
+						</div>
+						
+						
+						<div class="form-group col-md-12">
+							<p:outputLabel for="periodo" value="Período: " />
+							<p:inputMask id="periodo" mask="99/9999"
+								styleClass="form-control"
+								value="#{cadastroPeriodoBean.periodoEdicao.periodo}">
+								<f:convertDateTime pattern="MM/yyyy"
+									timeZone="America/Sao_Paulo" />
+							</p:inputMask>
+						</div>
+						
+						<div class="form-group col-md-12">
+							<p:outputLabel for="obs" value="Observação:" />
+							<p:inputTextarea id="obs" maxlength="255" autoResize="true"
+								styleClass="form-control"
+								value="#{cadastroPeriodoBean.periodoEdicao.observacao}" />
+						</div>
+				
+					</div>
+		
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" process="@form" value="Salvar"
+							action="#{cadastroPeriodoBean.salvar}"
+							styleClass="btn btn-flat btn-success"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+							<p:ajax update="codigo" />
+						</p:commandButton>
+				
+					</div>
+					
+				</div>
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

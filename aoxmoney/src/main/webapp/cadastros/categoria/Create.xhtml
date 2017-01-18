@@ -1,0 +1,100 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<f:metadata>
+		<f:viewParam name="id"
+			value="#{cadastroCategoriaBean.categoriaEdicao}" />
+		<f:viewAction action="#{cadastroCategoriaBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Categoria</ui:define>
+
+	<ui:param name="activeMenu" value="categoria" />
+
+	<ui:param name="activeSubMenu" value="categoria" />
+	
+	<ui:define name="descricao"> Categoria </ui:define>
+
+	<ui:define name="breadcrumb">
+		<li><h:link outcome="/cadastros/categoria/List.xhtml">
+					Consulta de Categoria
+				</h:link></li>
+
+		<li class="active">Novo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+
+
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-6">
+							<p:outputLabel for="codigo" value="Código: " />
+							<p:inputText id="codigo" readonly="true"
+								styleClass="form-control"
+								value="#{cadastroCategoriaBean.categoriaEdicao.codigo}" />
+
+						</div>
+						<div class="form-group col-md-6">
+							<p:outputLabel value="Tipo" for="tipo" />
+							<p:selectOneMenu id="tipo"
+								value="#{cadastroCategoriaBean.categoriaEdicao.tipo}">
+								<f:selectItems value="#{cadastroCategoriaBean.receitaDespesa}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="box-body row">
+						<div class="form-group col-md-6">
+							<p:outputLabel for="descricao" value="Descrição: " />
+							<p:inputText id="descricao" styleClass="form-control"
+								value="#{cadastroCategoriaBean.categoriaEdicao.descricao}" />
+
+						</div>
+
+						<div class="form-group col-md-6">
+							<p:outputLabel for="categoria" value="Categoria: " />
+							<p:selectOneMenu filter="true"
+								value="#{cadastroCategoriaBean.categoriaEdicao.categoriaPai}"
+								id="categoria">
+								<f:selectItem noSelectionOption="true"
+									itemLabel="Selecione uma categoria" />
+								<f:selectItems value="#{cadastroCategoriaBean.todasCategorias}"
+									var="categoria" itemValue="#{categoria}"
+									itemLabel="#{categoria.descricao}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" process="@form" value="Salvar"
+							action="#{cadastroCategoriaBean.salvar}"
+							styleClass="btn btn-success" onstart="PF('Loading').show()"
+							onsuccess="PF('Loading').hide()">
+
+							<p:ajax update="codigo" />
+						</p:commandButton>
+					</div>
+				</div>
+
+
+
+
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

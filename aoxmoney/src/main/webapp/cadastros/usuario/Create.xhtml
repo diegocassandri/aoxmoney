@@ -1,0 +1,114 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{cadastroUsuarioBean.usuarioEdicao}" />
+		<f:viewAction action="#{cadastroUsuarioBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Usuário</ui:define>
+
+	<ui:param name="activeMenu" value="config" />
+
+	<ui:param name="activeSubMenu" value="usuario" />
+
+	<ui:define name="breadcrumb">
+		<li><h:link outcome="/usuario/List.xhtml">
+					Consulta Usuário
+				</h:link></li>
+
+		<li class="active">Novo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel for="codigo" value="Código: " />
+							<p:inputText id="codigo" readonly="true"
+								styleClass="form-control"
+								value="#{cadastroUsuarioBean.usuarioEdicao.codigo}" />
+
+						</div>
+						<div class="form-group col-md-4">
+							<p:outputLabel for="nomes" value="Nome: " />
+							<p:inputText id="nomes" styleClass="form-control"
+								value="#{cadastroGrupoBean.usuarioEdicao.usuario}" />
+
+						</div>
+						<div class="form-group col-md-4">
+							<p:outputLabel for="senhas" value="Senha: " />
+							<p:password id="senhas" feedback="true" inline="true"
+								redisplay="true" promptLabel="Digite uma senha segura"
+								goodLabel="Boa" weakLabel="Razoável" strongLabel="Excelente"
+								value="#{cadastroUsuarioBean.usuarioEdicao.senha}"
+								styleClass="form-control" />
+
+						</div>
+					</div>
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel value="Mudar Senha:" for="mudarSenha" />
+							<p:selectBooleanButton id="mudarSenha" styleClass="form-control"
+								value="#{cadastroUsuarioBean.usuarioEdicao.mudarSenha}"
+								onLabel="Sim" offLabel="Não" />
+						</div>
+						<div class="form-group col-md-4">
+							<p:outputLabel value="Nome Completo:" for="nomeCompleto" />
+							<p:inputText id="nomeCompleto" size="20" maxlength="100"
+								styleClass="form-control"
+								value="#{cadastroUsuarioBean.usuarioEdicao.nomeCompleto}" />
+						</div>
+						<div class="form-group col-md-4">
+							<p:outputLabel value="Email:" for="email" />
+							<p:inputText id="email" styleClass="form-control"
+								value="#{cadastroUsuarioBean.usuarioEdicao.email}" />
+						</div>
+					</div>
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel value="Status:" for="status" />
+							<p:selectOneMenu id="status" styleClass="form-control"
+								value="#{cadastroUsuarioBean.usuarioEdicao.status}">
+								<f:selectItems value="#{cadastroUsuarioBean.statusList}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" process="@form" value="Salvar"
+							action="#{cadastroUsuarioBean.salvar}"
+							styleClass="btn btn-flat btn-success"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+							<p:ajax update="codigo" />
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Associar Grupos"
+							disabled="#{cadastroUsuarioBean.usuarioEdicao.codigo == null}"
+							process="@this" icon="ui-icon-circle-plus"
+							title="Associar Grupos">
+							<p:resetInput target="associaGrupos-Dialog" />
+						</p:commandButton>
+					</div>
+				</div>
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,448 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<ui:define name="titulo">- Dasboard - </ui:define>
+
+	<ui:param name="activeMenu" value="dashboard" />
+
+	<pe:blockUI widgetVar="loadingBlock" target="principal">
+		<p:graphicImage width="32" height="32" library="image"
+			name="loading.gif" />
+	</pe:blockUI>
+
+	<ui:define name="breadcrumb">
+
+	</ui:define>
+
+	<ui:define name="descricao"> Dashboard </ui:define>
+
+
+
+	<ui:define name="corpo">
+
+		<!-- Main content -->
+		<section class="content">
+
+			<!-- Main row -->
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box">
+						<div class="box-body">
+							<div class="form-group col-md-2">
+								<p:button immediate="true" value="Novo Lançamento"
+									styleClass="btn btn-primary" outcome="/Movimento.xhtml"
+									icon="fa fa-plus" onstart="PF('Loading').show()"
+									onsuccess="PF('Loading').hide()" />
+							</div>
+							<div class="form-group col-md-1">
+								<p:outputLabel for="periodo" value="Período: " />
+							</div>
+							<div class="form-group col-md-8">
+								<p:selectOneMenu filter="true"
+									value="#{movimentoBean.periodoSelecionado}" id="periodo">
+									<f:selectItem noSelectionOption="true"
+										itemLabel="Selecione um período" />
+									<f:selectItems value="#{movimentoBean.todosPeriodos}"
+										var="periodo" itemValue="#{periodo}" 
+										itemLabel="#{periodo.periodo} " >
+									</f:selectItems>
+									
+								</p:selectOneMenu>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="row">
+
+				<div class="col-md-8">
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">CONTAS A PAGAR</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div class="box-body">
+							<h:form>
+								<p:dataTable value="#{movimentoBean.todosDebitos}"
+									var="movimento" emptyMessage="Nenhum movimento." rows="10"
+									paginator="true" paginatorPosition="bottom"
+									style="margin-top: 10px" id="movimento-table"
+									widgetVar="tabelaMovimento" reflow="true">
+
+									<f:facet name="header">
+										<div align="left">
+											<p:outputPanel>
+												<p:inputText id="globalFilter"
+													onkeyup="PF('tabelaMovimento').filter()"
+													style="width:150px" placeholder="Filtro" />
+											</p:outputPanel>
+										</div>
+									</f:facet>
+
+
+									<p:column headerText="Data" sortBy="#{movimento.data}"
+										sortable="false" filterBy="#{movimento.data}"
+										filterMatchMode="contains" filterable="false" width="100">
+										<h:outputText value="#{movimento.data}">
+											<f:convertDateTime pattern="dd/MM/yyyy"
+												TimeZone="America/Sao_Paulo" />
+										</h:outputText>
+									</p:column>
+
+									<p:column headerText="Descrição" width="200"
+										sortBy="#{movimento.descricao}" sortable="false"
+										filterBy="#{movimento.descricao}" filterMatchMode="contains"
+										filterable="false">
+										<h:outputText value="#{movimento.descricao}" />
+									</p:column>
+
+									<p:column headerText="Valor" sortBy="#{movimento.valor}"
+										sortable="false" filterBy="#{movimento.valor}"
+										filterMatchMode="contains" filterable="false" width="100">
+										<h:outputText value="#{movimento.valor}">
+											<f:convertNumber type="currency" locale="pt_BR" />
+										</h:outputText>
+									</p:column>
+
+									<p:column width="15%">
+										<p:spacer width="10" />
+										<p:commandButton icon="fa fa-money" update="@form conta-table"
+											process="@this" title="Pagar"
+											action="#{movimentoBean.excluir}"
+											styleClass="btn btn-success" onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+
+											<f:setPropertyActionListener value="#{movimento}"
+												target="#{movimentoBean.movimentoEdicao}" />
+
+											<p:confirm icon="ui-icon-alert"
+												header="Confirmação de Pagamento"
+												message="Confirmar Pagamento?" />
+										</p:commandButton>
+										<p:spacer width="10" />
+										<p:button icon="fa fa-edit" title="Editar"
+											styleClass="btn btn-primary" outcome="/Movimento"
+											onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+											<f:param name="id" value="#{movimento.codigo}" />
+										</p:button>
+										<p:spacer width="10" />
+										<p:commandButton icon="fa fa-close" update="@form"
+											process="@this" title="Excluir"
+											action="#{movimentoBean.excluir}"
+											styleClass="btn btn-primary" onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+
+											<f:setPropertyActionListener value="#{movimento}"
+												target="#{movimentoBean.movimentoEdicao}" />
+
+											<p:confirm icon="ui-icon-alert"
+												header="Confirmação de exclusão"
+												message="Tem certeza que deseja excluir do Movimento?" />
+										</p:commandButton>
+
+									</p:column>
+								</p:dataTable>
+							</h:form>
+
+						</div>
+					</div>
+
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">CONTAS A RECEBER</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div class="box-body">
+							<h:form>
+								<p:dataTable value="#{movimentoBean.todosCreditos}"
+									var="movimento" emptyMessage="Nenhum movimento." rows="10"
+									paginator="true" paginatorPosition="bottom"
+									style="margin-top: 10px" id="receber-table"
+									widgetVar="tabelaMovimento" reflow="true">
+
+									<f:facet name="header">
+										<div align="left">
+											<p:outputPanel>
+												<p:inputText id="globalFilter"
+													onkeyup="PF('tabelaMovimento').filter()"
+													style="width:150px" placeholder="Filtro" />
+											</p:outputPanel>
+										</div>
+									</f:facet>
+
+
+									<p:column headerText="Data" sortBy="#{movimento.data}"
+										sortable="false" filterBy="#{movimento.data}"
+										filterMatchMode="contains" filterable="false" width="100">
+										<h:outputText value="#{movimento.data}">
+											<f:convertDateTime pattern="dd/MM/yyyy"
+												TimeZone="America/Sao_Paulo" />
+										</h:outputText>
+									</p:column>
+
+									<p:column headerText="Descrição" width="200"
+										sortBy="#{movimento.descricao}" sortable="false"
+										filterBy="#{movimento.descricao}" filterMatchMode="contains"
+										filterable="false">
+										<h:outputText value="#{movimento.descricao}" />
+									</p:column>
+
+									<p:column headerText="Valor" sortBy="#{movimento.valor}"
+										sortable="false" filterBy="#{movimento.valor}"
+										filterMatchMode="contains" filterable="false" width="100">
+										<h:outputText value="#{movimento.valor}">
+											<f:convertNumber type="currency" locale="pt_BR" />
+										</h:outputText>
+									</p:column>
+
+									<p:column width="15%">
+										<p:spacer width="10" />
+										<p:commandButton icon="fa fa-money" update="@form conta-table"
+											process="@this" title="Pagar"
+											action="#{movimentoBean.excluir}"
+											styleClass="btn btn-success" onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+
+											<f:setPropertyActionListener value="#{movimento}"
+												target="#{movimentoBean.movimentoEdicao}" />
+
+											<p:confirm icon="ui-icon-alert"
+												header="Confirmação de Recebimento"
+												message="Confirmar Recebimento?" />
+										</p:commandButton>
+										<p:spacer width="10" />
+										<p:button icon="fa fa-edit" title="Editar"
+											styleClass="btn btn-primary" outcome="/Movimento"
+											onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+											<f:param name="id" value="#{movimento.codigo}" />
+										</p:button>
+										<p:spacer width="10" />
+										<p:commandButton icon="fa fa-close" update="@form"
+											process="@this" title="Excluir"
+											action="#{movimentoBean.excluir}"
+											styleClass="btn btn-primary" onstart="PF('Loading').show()"
+											onsuccess="PF('Loading').hide()">
+
+											<f:setPropertyActionListener value="#{movimento}"
+												target="#{movimentoBean.movimentoEdicao}" />
+
+											<p:confirm icon="ui-icon-alert"
+												header="Confirmação de exclusão"
+												message="Tem certeza que deseja excluir do Movimento?" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</h:form>
+
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-4">
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">SALDOS</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div class="box-body">
+							<p:dataTable value="#{movimentoBean.todasContas}" var="conta"
+								emptyMessage="Nenhunha Conta." rows="5" style="margin-top: 10px"
+								id="conta-table" widgetVar="tabelaConta" reflow="true">
+
+								<p:column headerText="Conta" sortBy="#{canta.nome}"
+									sortable="false" filterable="false">
+									<h:outputText value="#{conta.nome}" />
+								</p:column>
+
+								<p:column headerText="Saldo">
+									<h:outputText value="#{conta.saldo}"
+										styleClass="#{colorSelectorBean.computeColor(conta.saldo)}">
+										<f:convertNumber type="currency" locale="pt_BR" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">ESTATÍSTICAS</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div jsf:id="principal" class="box-body">
+							<!-- Small boxes (Stat box) -->
+
+							<div class="col-md-6 col-sm-6">
+								<!-- small box -->
+								<div class="small-box bg-aqua">
+									<div class="inner">
+										<h3>#{dashboardController.quantidadeContas}</h3>
+
+										<p>Contas</p>
+									</div>
+									<div class="icon">
+										<i class="ion ion-briefcase"></i>
+									</div>
+									<h:link outcome="/cadastros/conta/List.xhtml"
+										styleClass="small-box-footer">
+										<i class="fa fa-arrow-circle-right"></i>
+									</h:link>
+								</div>
+							</div>
+							<!-- ./col -->
+							<div class="col-md-6 col-sm-6">
+								<!-- small box -->
+								<div class="small-box bg-green">
+									<div class="inner">
+										<h3>#{dashboardController.quantidadeCartoes}</h3>
+
+										<p>Cartões</p>
+									</div>
+									<div class="icon">
+										<i class="ion ion-card"></i>
+									</div>
+									<h:link outcome="/cadastros/cartao/List.xhtml"
+										styleClass="small-box-footer">
+										<i class="fa fa-arrow-circle-right"></i>
+									</h:link>
+
+								</div>
+							</div>
+							<!-- ./col -->
+							<div class="col-md-6 col-sm-6">
+								<!-- small box -->
+								<div class="small-box bg-yellow">
+									<div class="inner">
+										<h3>#{dashboardController.quantidadeCentroDeCustos}</h3>
+
+										<p>Centro de Custos</p>
+									</div>
+									<div class="icon">
+										<i class="ion ion-pie-graph"></i>
+									</div>
+									<h:link outcome="/cadastros/centroCusto/List.xhtml"
+										styleClass="small-box-footer">
+										<i class="fa fa-arrow-circle-right"></i>
+									</h:link>
+								</div>
+							</div>
+							<!-- ./col -->
+							<div class="col-md-6 col-sm-6">
+								<!-- small box -->
+								<div class="small-box bg-red">
+									<div class="inner">
+										<h3>#{dashboardController.quantidadeUsuarios}</h3>
+
+										<p>Usuários</p>
+									</div>
+									<div class="icon">
+										<i class="ion ion-person-add"></i>
+									</div>
+									<h:link outcome="/cadastros/usuario/Usuario.xhtml"
+										styleClass="small-box-footer">
+										<i class="fa fa-arrow-circle-right"></i>
+									</h:link>
+								</div>
+							</div>
+							<!-- ./col -->
+						</div>
+
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">DESPESAS POR CATEGORIA</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div class="box-body">
+							<!--  <p:chart type="pie" model="#{movimentoBean.modeloDespesas}" style="width:400px;height:300px" /> -->
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="box">
+						<div class="box-header with-border">
+							<h3 class="box-title">RECEITAS POR CATEGORIA</h3>
+							<div class="box-tools pull-right">
+								<button type="button" class="btn btn-box-tool"
+									data-widget="collapse">
+									<i class="fa fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool"
+									data-widget="remove">
+									<i class="fa fa-times"></i>
+								</button>
+							</div>
+						</div>
+						<div class="box-body">
+							<!--<p:chart type="pie" model="#{movimentoBean.modeloReceitas}" style="width:400px;height:300px" /> -->
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

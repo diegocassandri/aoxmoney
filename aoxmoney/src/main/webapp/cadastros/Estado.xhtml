@@ -1,0 +1,159 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroEstadoBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Estado</ui:define>
+
+	<ui:param name="activeMenu" value="cadastros" />
+
+	<ui:param name="activeSubMenu" value="estado" />
+	
+	<ui:define name="descricao"> Estado  </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro Estado</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				
+				<div id="boxBody" class="box-body">
+					<h:form id="frmCadastro">
+
+						<p:toolbar id="toolbar">
+							<f:facet name="left">
+								<p:commandButton value="Novo" icon="ui-icon-document"
+									action="#{cadastroEstadoBean.prepararNovoCadastro}"
+									process="@this" update="estado-dialog" styleClass="btn btn-primary"
+									oncomplete="PF('edicaoEstadoDialog').show()">
+
+									<p:resetInput target="estado-dialog" />
+								</p:commandButton>
+
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+
+								<p:commandButton value="Editar" icon="ui-icon-pencil"
+									title="Editar" process="@this" update="estado-dialog"
+									oncomplete="PF('edicaoEstadoDialog').show()" styleClass="btn btn-primary"
+									disabled="#{cadastroEstadoBean.estadoSelecionado == null}">
+									<p:resetInput target="estado-dialog" />
+
+									<f:setPropertyActionListener
+										value="#{cadastroEstadoBean.estadoSelecionado}"
+										target="#{cadastroEstadoBean.estadoEdicao}" />
+								</p:commandButton>
+
+								<p:commandButton value="Excluir" icon="ui-icon-trash"
+									title="Excluir" process="@this" styleClass="btn btn-primary"
+									update="estado-table msgs toolbar"
+									action="#{cadastroEstadoBean.excluir}"
+									disabled="#{cadastroEstadoBean.estadoSelecionado == null}"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+									<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir o Estado?" />
+
+								</p:commandButton>
+							</f:facet>
+
+						</p:toolbar>
+
+						<p:dataTable id="estado-table" rows="15"
+							value="#{cadastroEstadoBean.todosEstados}" var="estado"
+							paginator="true" paginatorPosition="bottom"
+							style="margin-top:10px" emptyMessage="Nenhum estado cadastrado."
+							selection="#{cadastroEstadoBean.estadoSelecionado}"
+							selectionMode="single" rowKey="#{estado.codigo}"
+							filteredValue="#{cadastroEstadoBean.filtroEstados}"
+							widgetVar="tabelaEstado" reflow="true">
+
+							<f:facet name="header">
+								<div align="left">
+									<p:outputPanel>
+										<p:inputText id="globalFilter"
+											onkeyup="PF('tabelaEstado').filter()" style="width:150px"
+											placeholder="Filtro" />
+									</p:outputPanel>
+								</div>
+							</f:facet>
+
+							<p:ajax event="rowSelect" update=":frmCadastro:toolbar" />
+							<p:ajax event="rowUnselect" update=":frmCadastro:toolbar" />
+
+							<p:column headerText="Código" sortBy="#{estado.codigo}"
+								filterBy="#{estado.codigo}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{estado.codigo}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{estado.nome}"
+								filterBy="#{estado.nome}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{estado.nome}" />
+							</p:column>
+
+							<p:column headerText="Sigla" sortBy="#{estado.sigla}"
+								filterBy="#{estado.sigla}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{estado.sigla}" />
+							</p:column>
+
+				
+						</p:dataTable>
+						
+						<p:dialog header="Cadastro Estado" widgetVar="edicaoEstadoDialog"
+							id="estado-dialog" resizable="false" modal="true" dynamic="true"
+							closeOnEscape="true" styleClas="box box-primary">
+
+							<p:messages id="msgs-dialog" autoUpdate="true" />
+
+							<p:defaultCommand target="salvar-button" scope="estado-dialog" />
+
+							<h:panelGrid columns="2" id="painel-dialog">
+								<p:outputLabel value="Código" for="codigo" />
+								<p:inputText id="codigo" size="7" maxlength="10"
+									value="#{cadastroEstadoBean.estadoEdicao.codigo}"
+									readonly="true" />
+
+								<p:outputLabel value="Nome" for="nome" />
+								<p:inputText id="nome" size="20" maxlength="50" 
+									value="#{cadastroEstadoBean.estadoEdicao.nome}" />
+
+								<p:outputLabel value="Sigla" for="sigla" />
+								<p:inputText id="sigla" size="7" maxlength="2" 
+									value="#{cadastroEstadoBean.estadoEdicao.sigla}" />
+
+								<p:commandButton value="Salvar" id="salvar-button"
+									action="#{cadastroEstadoBean.salvar}" process="estado-dialog"
+									update="msgs-dialog painel-dialog" styleClass="btn btn-success"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()"
+									 />
+							</h:panelGrid>
+						</p:dialog>
+
+					</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

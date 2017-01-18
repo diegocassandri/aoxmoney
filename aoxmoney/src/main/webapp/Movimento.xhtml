@@ -1,0 +1,188 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<ui:define name="titulo">- Movimento Financeiro - </ui:define>
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{movimentoBean.movimentoEdicao}" />
+		<f:viewAction action="#{movimentoBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:param name="activeMenu" value="dashboard" />
+
+	<pe:blockUI widgetVar="loadingBlock" target="principal">
+		<p:graphicImage width="32" height="32" library="image"
+			name="loading.gif" />
+	</pe:blockUI>
+
+	<ui:define name="breadcrumb">
+		<li class="active">Movimento Financeiro</li>
+	</ui:define>
+
+	<ui:define name="descricao"> Movimento Financeiro </ui:define>
+
+	<ui:define name="corpo">
+
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-12">
+							<p:outputLabel for="tipo" value="Tipo: " />
+
+							<p:selectOneButton id="tipo"
+								disabled="#{movimentoBean.movimentoEdicao.codigo != null}"
+								styleClass="btn-group btn-group-justified btn-group-sm"
+								value="#{movimentoBean.movimentoEdicao.tipo}">
+								<f:selectItems value="#{movimentoBean.tipo}" />
+								<f:ajax event="change" render="categoria btnPagar btnReceber"
+									listener="#{movimentoBean.listaCategorias}" />
+							</p:selectOneButton>
+
+						</div>
+						<div class="form-group col-md-6">
+							<p:outputLabel for="datepicker" value="Vencimento: " />
+							<p:inputMask id="datepicker" styleClass="form-control"
+								mask="99/99/9999" value="#{movimentoBean.movimentoEdicao.data}">
+								<f:convertDateTime pattern="dd/MM/yyyy"
+									timeZone="America/Sao_Paulo" />
+							</p:inputMask>
+						</div>
+
+						<div class="form-group col-md-6">
+							<p:outputLabel for="descricao" value="Descrição: " />
+							<p:inputText id="descricao" styleClass="form-control"
+								value="#{movimentoBean.movimentoEdicao.descricao}">
+
+							</p:inputText>
+
+						</div>
+
+						<div class="form-group col-md-6">
+							<p:outputLabel for="categoria" value="Categoria: " />
+							<p:selectOneMenu filter="true"
+								value="#{movimentoBean.movimentoEdicao.categoria}"
+								required="true"
+								requiredMessage="O Campo Categoria é obrigatório" id="categoria">
+								<f:selectItem noSelectionOption="true"
+									itemLabel="Selecione uma categoria" />
+								<f:selectItems value="#{movimentoBean.todasCategorias}"
+									var="categoria" itemValue="#{categoria}"
+									itemLabel="#{categoria.descricao}" />
+							</p:selectOneMenu>
+
+						</div>
+
+						<div class="form-group col-md-6">
+							<p:outputLabel for="conta" value="Conta: " />
+							<p:selectOneMenu filter="true"
+								value="#{movimentoBean.movimentoEdicao.conta}" required="true"
+								requiredMessage="O Campo Conta é obrigatório" id="conta">
+								<f:selectItem noSelectionOption="true"
+									itemLabel="Selecione uma conta" />
+								<f:selectItems value="#{movimentoBean.todasContas}" var="conta"
+									itemValue="#{conta}" itemLabel="#{conta.nome}" />
+							</p:selectOneMenu>
+
+						</div>
+
+						<div class="form-group col-md-4">
+							<p:outputLabel for="valor" value="Valor: " />
+							<p:inputText id="valor" styleClass="form-control"
+								value="#{movimentoBean.movimentoEdicao.valor}"
+								onfocus="maskMoney(this)">
+								<f:convertNumber pattern="#,##0.00" />
+								<f:validateDoubleRange minimum="0.01" />
+							</p:inputText>
+						</div>
+
+						<div class="form-group col-md-3">
+							<p:outputLabel value="Status:" for="status" />
+							<p:selectOneMenu id="status" disabled="true"
+								value="#{movimentoBean.movimentoEdicao.status}">
+								<f:selectItems value="#{movimentoBean.status}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="form-group col-md-3">
+							<p:outputLabel value="Movimento Confirmado?  " for="confirmado" />
+							<p:spacer width="20" height="50" />
+							<p:selectBooleanCheckbox
+								value="#{movimentoBean.movimentoEdicao.confirmado}"
+								id="confirmado"
+								disabled="#{movimentoBean.movimentoEdicao.codigo != null}">
+								<p:ajax update="status"
+									listener="#{movimentoBean.marcarConfirmacao}" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" value="Salvar"
+							action="#{movimentoBean.salvar}"
+							styleClass="btn btn-flat btn-success"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+						</p:commandButton>
+
+						<p:commandButton value="Pagar" id="btnPagar"
+							update="confirmar-dialog"
+							oncomplete="PF('confirmarDialog').show()"
+							disabled="#{movimentoBean.movimentoEdicao.status != 'ABERTO'}"
+							rendered="#{movimentoBean.movimentoEdicao.tipo == 'DESPESA'}"
+							styleClass="btn btn-flat btn-primary">
+						</p:commandButton>
+
+						<p:commandButton update="@form" value="Receber" id="btnReceber"
+							oncomplete="PF('confirmarDialog').show()"
+							disabled="#{movimentoBean.movimentoEdicao.status != 'ABERTO'}"
+							rendered="#{movimentoBean.movimentoEdicao.tipo == 'RECEITA'}"
+							styleClass="btn btn-flat btn-primary">
+						</p:commandButton>
+
+						<p:button value="Voltar" outcome="/Home.xhtml"
+							styleClass="btn btn-flat btn-primary" />
+					</div>
+				</div>
+			</h:form>
+
+			<p:dialog header="Confirmar Lançamento" widgetVar="confirmarDialog"
+				id="confirmar-dialog" resizable="false" modal="true"
+				closeOnEscape="true" styleClass="box box-danger">
+				<h:form>
+
+						<div class="form-group col-md-3">
+							<p:outputLabel value="Descrição: " />
+							<p:outputLabel value="#{movimentoBean.movimentoEdicao.descricao}" />
+						</div>
+
+					<div class="box-footer align-right">
+						<p:commandButton value="Não" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+							action="PF('confirmarDialog').hide()" />
+
+						<p:commandButton value="Sim" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+							action="#{movimentoBean.pagarReceber}"
+							onsuccess="#{movimentoBean.pagarReceber}" update="frmCadastro" />
+					</div>
+
+
+				</h:form>
+			</p:dialog>
+		</section>
+	</ui:define>
+
+</ui:composition>

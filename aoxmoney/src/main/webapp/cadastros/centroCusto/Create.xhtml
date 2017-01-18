@@ -1,0 +1,98 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<f:metadata>
+		<f:viewParam name="id"
+			value="#{cadastroCentroCustoBean.centroCustoEdicao}" />
+		<f:viewAction action="#{cadastroCentroCustoBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Centro de Custo</ui:define>
+
+	<ui:param name="activeMenu" value="centroCusto" />
+
+	<ui:param name="activeSubMenu" value="centroCusto" />
+	
+	<ui:define name="descricao"> Centro de Custo </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li><h:link outcome="/cadastros/centroCusto//List.xhtml">
+					Consulta de Centro de Custo
+				</h:link></li>
+
+				<li class="active">Novo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel for="codigo" value="Código: " />
+							<p:inputText id="codigo" readonly="true"
+								styleClass="form-control"
+								value="#{cadastroCentroCustoBean.centroCustoEdicao.codigo}" />
+
+						</div>
+						<div class="form-group col-md-4">
+							<p:outputLabel for="nome" value="Nome: " />
+							<p:inputText id="nome" styleClass="form-control"
+								value="#{cadastroCentroCustoBean.centroCustoEdicao.nome}" />
+
+						</div>
+					</div>
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel for="descricao" value="Descricão: " />
+							<p:inputText id="descricao" styleClass="form-control"
+								value="#{cadastroCentroCustoBean.centroCustoEdicao.descricao}" />
+
+						</div>
+
+						<div class="form-group col-md-4">
+							<p:outputLabel value="Centro de Custo Pai" for="centro" />
+							<p:selectOneMenu filter="true"
+								value="#{cadastroCentroCustoBean.centroCustoEdicao.centroCustoPai}"
+								id="centro">
+								<f:selectItem noSelectionOption="true"
+									itemLabel="Selecione um centro de Custo" />
+								<f:selectItems
+									value="#{cadastroCentroCustoBean.todosCentrosCustos}"
+									var="centro" itemValue="#{centro}" itemLabel="#{centro.nome}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" process="@form" value="Salvar"
+							action="#{cadastroCentroCustoBean.salvar}"
+							styleClass="btn btn-success"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+							<p:ajax update="codigo" />
+						</p:commandButton>
+					</div>
+				</div>
+
+
+
+
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,124 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{cadastroContaBean.contaEdicao}" />
+		<f:viewAction action="#{cadastroContaBean.prepararNovoCadastro}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Conta</ui:define>
+
+	<ui:param name="activeMenu" value="conta" />
+
+	<ui:param name="activeSubMenu" value="conta" />
+	
+	<ui:define name="descricao"> Conta </ui:define>
+
+	<ui:define name="breadcrumb">
+		<li><h:link outcome="/cadastros/conta/List.xhtml">
+					Consulta Conta
+				</h:link></li>
+
+		<li class="active">Novo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+
+
+		<!-- Main content -->
+		<section class="content">
+
+			<h:form id="frmCadastro">
+				<div class="row">
+					<div class="col-sm-12">
+						<p:messages id="msgs" closable="true" />
+					</div>
+				</div>
+
+				<div class="box box-primary">
+					<div class="box-body row">
+						<div class="form-group col-md-3">
+							<p:outputLabel for="codigo" value="Código: " />
+							<p:inputText id="codigo" readonly="true"
+								styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.codigo}" />
+
+						</div>
+
+						<div class="form-group col-md-3">
+							<p:outputLabel value="Tipo de Conta:" for="tipo" />
+							<p:selectOneMenu id="tipo"
+								disabled="#{cadastroContaBean.contaEdicao.codigo != null}"
+								value="#{cadastroContaBean.contaEdicao.tipoConta}">
+								<f:selectItems value="#{cadastroContaBean.tipoContas}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="form-group col-md-12">
+							<p:outputLabel for="nome" value="Nome: " />
+							<p:inputText id="nome" styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.nome}" />
+
+						</div>
+					</div>
+					<div class="box-body row">
+						<div class="form-group col-md-4">
+							<p:outputLabel for="banco" value="Banco: " />
+							<p:inputText id="banco" styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.banco}" />
+
+						</div>
+						<div class="form-group col-md-2">
+							<p:outputLabel for="agencia" value="Agência: " />
+							<p:inputText id="agencia" styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.agencia}" />
+
+						</div>
+						<div class="form-group col-md-2">
+							<p:outputLabel for="conta" value="Conta: " />
+							<p:inputText id="conta" styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.conta}" />
+
+						</div>
+						<div class="form-group col-md-2">
+							<p:outputLabel for="digito" value="Dígito: " />
+							<p:inputText id="digito" styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.digito}" />
+						</div>
+						<div class="form-group col-md-2">
+							<p:outputLabel for="saldo" value="Saldo: " />
+							<p:inputText id="saldo" styleClass="form-control"
+								disabled="#{cadastroContaBean.contaEdicao.codigo != null}"
+								value="#{cadastroContaBean.contaEdicao.saldo}"
+								onfocus="maskMoney(this)">
+								<f:convertNumber type="number" groupingUsed="true"
+									minFractionDigits="2" pattern="#0.00" />
+							</p:inputText>
+
+						</div>
+						<div class="form-group col-md-12">
+							<p:outputLabel for="descricao" value="Descrição" />
+							<p:inputTextarea id="descricao" maxlength="255" autoResize="true"
+								styleClass="form-control"
+								value="#{cadastroContaBean.contaEdicao.descricao}" />
+						</div>
+
+					</div>
+					<div class="box-footer align-right">
+						<p:commandButton update="@form" process="@form" value="Salvar"
+							action="#{cadastroContaBean.salvar}" styleClass="btn btn-success"
+							onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+							<p:ajax update="codigo" />
+						</p:commandButton>
+					</div>
+				</div>
+			</h:form>
+		</section>
+	</ui:define>
+
+</ui:composition>

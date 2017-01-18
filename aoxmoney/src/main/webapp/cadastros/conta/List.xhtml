@@ -1,0 +1,105 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroContaBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Conta</ui:define>
+
+	<ui:param name="activeMenu" value="conta" />
+
+	<ui:param name="activeSubMenu" value="conta" />
+	
+	<ui:define name="descricao"> Conta </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro Conta</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h:form id="controlsForm" prependId="false">
+						<div class="box-tools pull-left">
+							<p:button immediate="true" value="Novo"
+								styleClass="btn btn-primary" outcome="/cadastros/conta/Create.xhtml"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+						</div>
+					</h:form>
+				</div>
+
+				<div jsf:id="boxBody" class="box-body">
+				<h:form>
+					<p:dataTable value="#{cadastroContaBean.todasContas}" var="conta"
+						emptyMessage="Nenhuma conta cadastrada." rows="10" paginator="true"
+						paginatorPosition="bottom" style="margin-top: 10px"
+						id="grupo-table" widgetVar="tabelaConta" reflow="true">
+
+						<f:facet name="header">
+							<div align="left">
+								<p:outputPanel>
+									<p:inputText id="globalFilter"
+										onkeyup="PF('tabelaConta').filter()" style="width:150px"
+										placeholder="Filtro" />
+								</p:outputPanel>
+							</div>
+						</f:facet>
+
+						<p:column headerText="Código" sortBy="#{conta.codigo}"
+							filterBy="#{conta.codigo}" footerText=""
+							filterMatchMode="contains" width="50" filterable="false">
+							<h:outputText value="#{conta.codigo}" />
+						</p:column>
+
+						<p:column headerText="Nome" width="200" sortBy="#{conta.nome}"
+							filterBy="#{conta.nome}" footerText="" filterMatchMode="contains"
+							filterable="false">
+							<h:outputText value="#{conta.nome}" />
+						</p:column>
+						<p:column width="3%">
+							<p:spacer width="10" />
+							<p:button icon="fa fa-edit" title="Editar"
+								styleClass="btn btn-primary" outcome="/cadastros/conta/Create"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+								<f:param name="id" value="#{conta.codigo}" />
+							</p:button>
+							<p:spacer width="10" />
+							<p:commandButton icon="fa fa-close" update="@form msgs" process="@this" title="Excluir"
+								action="#{cadastroContaBean.excluir}" onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()"
+								styleClass="btn btn-primary">
+								
+								<f:setPropertyActionListener
+										value="#{conta}"
+										target="#{cadastroContaBean.contaEdicao}" />
+										
+								<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir a Conta?" />
+							</p:commandButton>
+
+						</p:column>
+					</p:dataTable>
+				</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

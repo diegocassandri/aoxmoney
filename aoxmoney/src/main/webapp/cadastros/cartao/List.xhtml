@@ -1,0 +1,122 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroCartaoBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de cartao</ui:define>
+
+	<ui:param name="activeMenu" value="cartao" />
+
+	<ui:param name="activeSubMenu" value="cartao" />
+	
+	<ui:define name="descricao"> Cartão </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro Cartão</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+
+
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h:form id="controlsForm" prependId="false">
+						<div class="box-tools pull-left">
+							<p:button immediate="true" value="Novo" styleClass="btn btn-primary"
+								 outcome="/cadastros/cartao/Create.xhtml"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+						</div>
+					</h:form>
+				</div>
+
+				<div jsf:id="boxBody" class="box-body">
+				<h:form>
+					<p:dataTable value="#{cadastroCartaoBean.todosCartoes}" var="cartao"
+						emptyMessage="Nenhum cartão cadastrado." rows="10" paginator="true"
+						paginatorPosition="bottom" style="margin-top: 10px"
+						id="grupo-table" widgetVar="tabelacartao" reflow="true">
+
+						<f:facet name="header">
+							<div align="left">
+								<p:outputPanel>
+									<p:inputText id="globalFilter"
+										onkeyup="PF('tabelacartao').filter()" style="width:150px"
+										placeholder="Filtro" />
+								</p:outputPanel>
+							</div>
+						</f:facet>
+
+						<p:column headerText="Código" sortBy="#{cartao.codigo}"
+							filterBy="#{cartao.codigo}" 
+							filterMatchMode="contains" filterable="false">
+							<h:outputText value="#{cartao.codigo}" />
+						</p:column>
+
+						<p:column headerText="Descrição"  sortBy="#{cartao.descricao}"
+							filterBy="#{cartao.descricao}"  filterMatchMode="contains"
+							filterable="false">
+							<h:outputText value="#{cartao.descricao}" />
+						</p:column>
+						
+						<p:column headerText="Limite" sortBy="#{cartao.limite}"
+							filterBy="#{cartao.limite}" filterMatchMode="contains"
+							filterable="false">
+							<h:outputText value="#{cartao.limite}" >
+								<f:convertNumber type="currency" locale="pt_BR" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Data Expiração" sortBy="#{cartao.dataExpiracao}"
+							filterBy="#{cartao.dataExpiracao}" filterMatchMode="contains"
+							filterable="false">
+							<h:outputText value="#{cartao.dataExpiracao}" >
+								<f:convertDateTime pattern="dd/MM/yyyy" TimeZone="America/Sao_Paulo" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column width="10%" >
+							<p:spacer width="8" />
+							<p:button icon="fa fa-edit" title="Editar"
+								styleClass="btn btn-primary" outcome="/cadastros/cartao/Create"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+								<f:param name="id" value="#{cartao.codigo}" />
+							</p:button>
+							<p:spacer width="10" />
+							<p:commandButton icon="fa fa-close" update="@form msgs" process="@this" title="Excluir"
+								action="#{cadastroCartaoBean.excluir}" styleClass="btn btn-primary"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+								
+								<f:setPropertyActionListener
+										value="#{cartao}"
+										target="#{cadastroCartaoBean.cartaoEdicao}" />
+										
+								<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir o Cartão?" />
+							</p:commandButton>
+
+						</p:column>
+					</p:dataTable>
+				</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

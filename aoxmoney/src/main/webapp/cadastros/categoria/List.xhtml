@@ -1,0 +1,169 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroCategoriaBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Categoria</ui:define>
+
+	<ui:param name="activeMenu" value="categoria" />
+
+	<ui:param name="activeSubMenu" value="categoria" />
+	
+	<ui:define name="descricao"> Categoria </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro de Centro de Categoria</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h:form id="controlsForm" prependId="false">
+						<div class="box-tools pull-left">
+							<p:button immediate="true" value="Nova Categoria"
+								styleClass="btn btn-primary"
+								outcome="/cadastros/categoria/Create.xhtml"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+						</div>
+					</h:form>
+				</div>
+
+				<div jsf:id="boxBody" class="box-body">
+					<div class="col-sm-6">
+						<h:form>
+							<p:dataTable value="#{cadastroCategoriaBean.todasReceitas}" 
+								var="categoria" emptyMessage="Nenhuma categoria cadastrada." 
+								style="margin-top: 10px" id="grupo-table"
+								widgetVar="tabelaCategoria" reflow="true">
+
+								<f:facet name="header">
+									Receitas
+									<div align="left">
+										<p:outputPanel>
+											<p:inputText id="globalFilter"
+												onkeyup="PF('tabelaCategoria').filter()" style="width:150px"
+												placeholder="Filtro" />
+										</p:outputPanel>
+									</div>
+								</f:facet>
+
+								<p:column headerText="Código" sortBy="#{categoria.codigo}"
+									filterBy="#{categoria.codigo}" width="10%"
+									filterMatchMode="contains" filterable="false">
+									<h:outputText value="#{categoria.codigo}" />
+								</p:column>
+
+								<p:column headerText="Descrição" sortBy="#{categoria.descricao}"
+									filterBy="#{categoria.descricao}" filterMatchMode="contains"
+									filterable="false">
+									<h:outputText value="#{categoria.descricao}" />
+								</p:column>
+								<p:column width="20%">
+									<p:spacer width="10" />
+									<p:button icon="fa fa-edit" title="Editar"
+										styleClass="btn btn-primary"
+										outcome="/cadastros/categoria/Create"
+										onstart="PF('Loading').show()"
+										onsuccess="PF('Loading').hide()">
+										<f:param name="id" value="#{categoria.codigo}" />
+									</p:button>
+									<p:spacer width="10" />
+									<p:commandButton icon="fa fa-close" update="@form msgs"
+										process="@this" title="Excluir"
+										action="#{cadastroCategoriaBean.excluir}"
+										styleClass="btn btn-primary" onstart="PF('Loading').show()"
+										onsuccess="PF('Loading').hide()">
+
+										<f:setPropertyActionListener value="#{categoria}"
+											target="#{cadastroCategoriaBean.categoriaEdicao}" />
+
+										<p:confirm icon="ui-icon-alert"
+											header="Confirmação de exclusão"
+											message="Tem certeza que deseja excluir a Categoria?" />
+									</p:commandButton>
+
+								</p:column>
+							</p:dataTable>
+						</h:form>
+
+					</div>
+					<div class="col-sm-6">
+						<h:form>
+							<p:dataTable value="#{cadastroCategoriaBean.todasDespesas}" 
+								var="categoria" emptyMessage="Nenhuma categoria cadastrada." 
+								style="margin-top: 10px" id="grupo-table"
+								widgetVar="tabelaDespesa" reflow="true">
+
+								<f:facet name="header">
+									Despesas
+									<div align="left">
+										<p:outputPanel>
+											<p:inputText id="globalFilter"
+												onkeyup="PF('tabelaDespesa').filter()" style="width:150px"
+												placeholder="Filtro" />
+										</p:outputPanel>
+									</div>
+								</f:facet>
+
+								<p:column headerText="Código" sortBy="#{categoria.codigo}"
+									filterBy="#{categoria.codigo}" width="10%"
+									filterMatchMode="contains" filterable="false">
+									<h:outputText value="#{categoria.codigo}" />
+								</p:column>
+
+								<p:column headerText="Descrição" sortBy="#{categoria.descricao}"
+									filterBy="#{categoria.descricao}" filterMatchMode="contains"
+									filterable="false">
+									<h:outputText value="#{categoria.descricao}" />
+								</p:column>
+								<p:column width="20%">
+									<p:spacer width="10" />
+									<p:button icon="fa fa-edit" title="Editar"
+										styleClass="btn btn-primary"
+										outcome="/cadastros/categoria/Create"
+										onstart="PF('Loading').show()"
+										onsuccess="PF('Loading').hide()">
+										<f:param name="id" value="#{categoria.codigo}" />
+									</p:button>
+									<p:spacer width="10" />
+									<p:commandButton icon="fa fa-close" update="@form msgs"
+										process="@this" title="Excluir"
+										action="#{cadastroCategoriaBean.excluir}"
+										styleClass="btn btn-primary" onstart="PF('Loading').show()"
+										onsuccess="PF('Loading').hide()">
+
+										<f:setPropertyActionListener value="#{categoria}"
+											target="#{cadastroCategoriaBean.categoriaEdicao}" />
+
+										<p:confirm icon="ui-icon-alert"
+											header="Confirmação de exclusão"
+											message="Tem certeza que deseja excluir a Categoria?" />
+									</p:commandButton>
+
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					
+					</div>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

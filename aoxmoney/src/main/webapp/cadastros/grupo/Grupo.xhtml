@@ -1,0 +1,227 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroGrupoBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Grupo</ui:define>
+
+	<ui:param name="activeMenu" value="config" />
+
+	<ui:param name="activeSubMenu" value="grupo" />
+	
+	<ui:define name="descricao"> Grupo </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro Grupo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+
+				<div jsf:id="boxBody" class="box-body">
+					<h:form id="frmCadastro">
+						<p:toolbar id="toolbar">
+							<f:facet name="left">
+								<p:commandButton value="Novo" icon="ui-icon-document"
+									action="#{cadastroGrupoBean.prepararNovoCadastro}"
+									process="@this" update="grupo-dialog"
+									styleClass="btn btn-primary"
+									oncomplete="PF('edicaoGrupoDialog').show()" title="Novo">
+									<p:resetInput target="grupo-dialog" />
+								</p:commandButton>
+
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+
+								<p:commandButton icon="ui-icon-pencil" title="Editar"
+									process="@this" update="grupo-dialog"
+									styleClass="btn btn-primary"
+									oncomplete="PF('edicaoGrupoDialog').show()"
+									disabled="#{cadastroGrupoBean.grupoSelecionado == null}">
+									<p:resetInput target="grupo-dialog" />
+
+									<f:setPropertyActionListener
+										value="#{cadastroGrupoBean.grupoSelecionado}"
+										target="#{cadastroGrupoBean.grupoEdicao}" />
+								</p:commandButton>
+
+								<p:commandButton icon="ui-icon-trash" title="Excluir"
+									process="@this" update="grupo-table msgs toolbar"
+									action="#{cadastroGrupoBean.excluir}"
+									styleClass="btn btn-primary"
+									disabled="#{cadastroGrupoBean.grupoSelecionado == null}"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+									<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir o Grupo?" />
+
+								</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+
+							</f:facet>
+
+							<f:facet name="right">
+								<p:commandButton value="Associar Usuários"
+									disabled="#{cadastroGrupoBean.grupoSelecionado == null}"
+									process="@this" update="associaUsuarios-Dialog"
+									oncomplete="PF('associaUsuariosDialog').show()"
+									styleClass="btn btn-primary" icon="ui-icon-circle-plus"
+									title="Associar Usuários">
+									<p:resetInput target="associaUsuarios-Dialog" />
+									<f:setPropertyActionListener
+										value="#{cadastroGrupoBean.grupoSelecionado}"
+										target="#{cadastroGrupoBean.grupoEdicao}" />
+								</p:commandButton>
+								<p:commandButton value="Permissões de Tela"
+									disabled="#{cadastroGrupoBean.grupoSelecionado == null}"
+									process="@this" update="associaTelas-Dialog"
+									oncomplete="PF('associaTelasDialog').show()"
+									icon="ui-icon-circle-plus" title="Associar Telas">
+									<p:resetInput target="associaTelas-Dialog" />
+									<f:setPropertyActionListener
+										value="#{cadastroGrupoBean.grupoSelecionado}"
+										target="#{cadastroGrupoBean.grupoEdicao}" />
+
+									<p:ajax update=":frmCadastro:associaTelas-Dialog">
+
+									</p:ajax>
+								</p:commandButton>
+							</f:facet>
+						</p:toolbar>
+
+						<p:dataTable value="#{cadastroGrupoBean.todosGrupos}" var="grupo"
+							emptyMessage="Nenhum grupo cadastrado." rows="10"
+							paginator="true" paginatorPosition="bottom"
+							style="margin-top: 10px" id="grupo-table"
+							selection="#{cadastroGrupoBean.grupoSelecionado}"
+							selectionMode="single" rowKey="#{grupo.codigo}"
+							filteredValue="#{cadastroGrupoBean.filtroGrupos}"
+							widgetVar="tabelaGrupo" reflow="true">
+
+							<f:facet name="header">
+								<div align="left">
+									<p:outputPanel>
+										<h:outputText value="Filtro:" />
+										<p:inputText id="globalFilter"
+											onkeyup="PF('tabelaGrupo').filter()" style="width:150px" />
+									</p:outputPanel>
+								</div>
+							</f:facet>
+
+							<p:ajax event="rowSelect" update=":frmCadastro:toolbar" />
+							<p:ajax event="rowUnselect" update=":frmCadastro:toolbar" />
+
+							<p:column headerText="Código" sortBy="#{grupo.codigo}"
+								filterBy="#{grupo.codigo}" footerText=""
+								filterMatchMode="contains" width="50" filterable="false">
+								<h:outputText value="#{grupo.codigo}" />
+							</p:column>
+
+							<p:column headerText="Nome" width="200"
+								sortBy="#{grupo.descricao}" filterBy="#{grupo.descricao}"
+								footerText="" filterMatchMode="contains" filterable="false">
+								<h:outputText value="#{grupo.descricao}" />
+							</p:column>
+
+						</p:dataTable>
+						<p:confirmDialog global="true">
+							<p:commandButton value="Sim" styleClass="ui-confirmdialog-yes"
+								type="button" icon="ui-icon-check" />
+							<p:commandButton value="Não" styleClass="ui-confirmdialog-no"
+								type="button" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<p:dialog header="Cadastro Grupo" widgetVar="edicaoGrupoDialog"
+							id="grupo-dialog" resizable="false" modal="true"
+							closeOnEscape="true">
+
+							<p:messages id="msgs-dialog" autoUpdate="true" />
+
+							<p:defaultCommand target="salvar-button" scope="grupo-dialog" />
+							<h:panelGrid columns="2" id="painel-dialog">
+								<p:outputLabel value="Código" for="codigo" />
+								<p:inputText id="codigo" size="5" maxlength="20"
+									value="#{cadastroGrupoBean.grupoEdicao.codigo}" readonly="true" />
+								<p:outputLabel value="Nome" for="nome" />
+								<p:inputText id="nome" required="true"
+									value="#{cadastroGrupoBean.grupoEdicao.descricao}" />
+								<p:commandButton value="Salvar" id="salvar-button"
+									action="#{cadastroGrupoBean.salvar}" process="grupo-dialog"
+									update="msgs-dialog painel-dialog"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+							</h:panelGrid>
+						</p:dialog>
+
+						<p:dialog widgetVar="associaUsuariosDialog"
+							id="associaUsuarios-Dialog" resizable="false" modal="true"
+							closeOnEscape="true" dynamic="true">
+							<p:messages id="msgs-associa" />
+							<h3 style="margin-top: 0">Associar Usuários ao Grupo
+								#{cadastroGrupoBean.grupoSelecionado.descricao}</h3>
+							<p:pickList id="pickUsuarios"
+								value="#{cadastroGrupoBean.todosUsuarios}" var="usuario"
+								iconOnly="true" itemLabel="#{usuario}" itemValue="#{usuario}"
+								converter="usuarioPickConverter" showSourceFilter="true"
+								showTargetFilter="true" filterMatchMode="contains">
+								<f:facet name="sourceCaption">Disponíveis</f:facet>
+								<f:facet name="targetCaption">Associados</f:facet>
+							</p:pickList>
+							<p:commandButton value="Salvar" style="margin-top:10px"
+								action="#{cadastroGrupoBean.salvaListaUsuarios}" update="msgs"
+								process="associaUsuarios-Dialog" styleClass="btn btn-success"
+								oncomplete="if (!args.validationFailed) PF('associaUsuariosDialog').hide()"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+						</p:dialog>
+
+						<p:dialog header="Associar telas" widgetVar="associaTelasDialog"
+							id="associaTelas-Dialog" resizable="false" modal="true"
+							closeOnEscape="true">
+							<p:messages id="msgs-associaTela" />
+							<h3 style="margin-top: 0">Permissões de Telas do Grupo
+								#{cadastroGrupoBean.grupoSelecionado.descricao}</h3>
+							<p:tree value="#{cadastroGrupoBean.raiz}"
+								selectionMode="checkbox" var="no" expanded="true"
+								expandAnim="FADE_IN" collapseAnim="FADE_OUT" animate="true"
+								id="arvore"
+								selection="#{cadastroGrupoBean.checkboxSelectedNodes}"
+								propagateSelectionUp="true" propagateSelectionDown="true">
+								<p:treeNode>
+									<h:outputText value="#{no.descricao}"
+										style="margin-left: 10px;" />
+								</p:treeNode>
+							</p:tree>
+							<p:commandButton value="Salvar" style="margin-top:10px"
+								action="#{cadastroGrupoBean.salvaPermissoesGrupo}"
+								process="associaTelas-Dialog" update="associaTelas-Dialog"
+								oncomplete="if (!args.validationFailed) PF('associaTelasDialog').hide()" />
+						</p:dialog>
+
+					</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

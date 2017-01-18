@@ -1,0 +1,106 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroCentroCustoBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Centro de Custo</ui:define>
+
+	<ui:param name="activeMenu" value="centroCusto" />
+
+	<ui:param name="activeSubMenu" value="centroCusto" />
+	
+	<ui:define name="descricao"> Centro de Custo </ui:define>
+
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro de Centro de Custo</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h:form id="controlsForm" prependId="false">
+						<div class="box-tools pull-left">
+							<p:button immediate="true" value="Novo"
+								styleClass="btn btn-primary" outcome="/cadastros/centroCusto/Create.xhtml"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()" />
+						</div>
+					</h:form>
+				</div>
+
+				<div jsf:id="boxBody" class="box-body">
+				<h:form>
+					<p:dataTable value="#{cadastroCentroCustoBean.todosCentrosCustos}" var="centroCusto"
+						emptyMessage="Nenhum centro de custo cadastrado." rows="10" paginator="true"
+						paginatorPosition="bottom" style="margin-top: 10px"
+						id="grupo-table" widgetVar="tabelacentroCusto" reflow="true">
+
+						<f:facet name="header">
+							<div align="left">
+								<p:outputPanel>
+									<p:inputText id="globalFilter"
+										onkeyup="PF('tabelacentroCusto').filter()" style="width:150px"
+										placeholder="Filtro" />
+								</p:outputPanel>
+							</div>
+						</f:facet>
+
+						<p:column headerText="Código" sortBy="#{centroCusto.codigo}"
+							filterBy="#{centroCusto.codigo}"  width="10%"
+							filterMatchMode="contains" filterable="false">
+							<h:outputText value="#{centroCusto.codigo}" />
+						</p:column>
+
+						<p:column headerText="Nome"  sortBy="#{centroCusto.nome}"
+							filterBy="#{centroCusto.nome}"  filterMatchMode="contains"
+							filterable="false">
+							<h:outputText value="#{centroCusto.nome}" />
+						</p:column>
+						
+
+						<p:column width="10%">
+							<p:spacer width="10" />
+							<p:button icon="fa fa-edit" title="Editar"
+								styleClass="btn btn-primary" outcome="/cadastros/centroCusto/Create"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+								<f:param name="id" value="#{centroCusto.codigo}" />
+							</p:button>
+							<p:spacer width="10" />
+							<p:commandButton icon="fa fa-close" update="@form msgs" process="@this" title="Excluir"
+								action="#{cadastroCentroCustoBean.excluir}" styleClass="btn btn-primary"
+								onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+								
+								<f:setPropertyActionListener
+										value="#{centroCusto}"
+										target="#{cadastroCentroCustoBean.centroCustoEdicao}" />
+										
+								<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir o Centro de Custo?" />
+							</p:commandButton>
+
+						</p:column>
+					</p:dataTable>
+				</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

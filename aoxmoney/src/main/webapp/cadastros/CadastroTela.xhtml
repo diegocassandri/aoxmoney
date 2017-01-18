@@ -1,0 +1,159 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="http://primefaces.org/ui"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroTelaBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Tela</ui:define>
+
+	<ui:param name="activeMenu" value="cadastros" />
+
+	<ui:param name="activeSubMenu" value="tela" />
+	
+	<ui:define name="descricao"> Tela </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active">Cadastro Tela</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-body">
+					<h:form id="frmCadastro">
+
+						<p:toolbar id="toolbar">
+							<f:facet name="left">
+								<p:commandButton value="Novo" icon="ui-icon-document"
+									action="#{cadastroTelaBean.prepararNovoCadastro}"
+									process="@this" update="tela-dialog"
+									oncomplete="PF('edicaoTelaDialog').show()">
+									<p:resetInput target="tela-dialog" />
+								</p:commandButton>
+
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+
+								<p:commandButton icon="ui-icon-pencil" title="Editar"
+									process="@this" update="tela-dialog"
+									oncomplete="PF('edicaoTelaDialog').show()"
+									disabled="#{cadastroTelaBean.telaSelecionada == null}">
+									<p:resetInput target="tela-dialog" />
+
+									<f:setPropertyActionListener
+										value="#{cadastroTelaBean.telaSelecionada}"
+										target="#{cadastroTelaBean.telaEdicao}" />
+								</p:commandButton>
+
+								<p:commandButton icon="ui-icon-trash" title="Excluir"
+									process="@this" update="tela-table msgs toolbar"
+									action="#{cadastroTelaBean.excluir}"
+									disabled="#{cadastroTelaBean.telaSelecionada == null}">
+
+									<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir a Tela?" />
+								</p:commandButton>
+							</f:facet>
+
+						</p:toolbar>
+
+						<p:dataTable value="#{cadastroTelaBean.todasTelas}" var="tela"
+							emptyMessage="Nenhuma tela cadastrada." rows="10"
+							paginator="true" paginatorPosition="bottom"
+							style="margin-top: 10px" id="tela-table"
+							selection="#{cadastroTelaBean.telaSelecionada}"
+							selectionMode="single" rowKey="#{tela.codigo}"
+							filteredValue="#{cadastroTelaBean.filtroTelas}"
+							widgetVar="tabelaTela">
+
+							<f:facet name="header">
+								<div align="left">
+									<p:outputPanel>
+										<h:outputText value="Filtro:" />
+										<p:inputText id="globalFilter"
+											onkeyup="PF('tabelaTela').filter()" style="width:150px" />
+									</p:outputPanel>
+								</div>
+							</f:facet>
+
+							<p:ajax event="rowSelect" update=":frmCadastro:toolbar" />
+							<p:ajax event="rowUnselect" update=":frmCadastro:toolbar" />
+
+							<p:column headerText="Código" sortBy="#{tela.codigo}"
+								filterBy="#{tela.codigo}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{tela.codigo}" />
+							</p:column>
+
+							<p:column headerText="Descrição" sortBy="#{tela.descricao}"
+								filterBy="#{tela.descricao}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{tela.descricao}" />
+							</p:column>
+
+							<p:column headerText="Url" sortBy="#{tela.url}"
+								filterBy="#{tela.url}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{tela.url}" />
+							</p:column>
+						</p:dataTable>
+
+						<p:dialog header="Nova Tela" widgetVar="edicaoTelaDialog"
+							id="tela-dialog" resizable="false" modal="true"
+							closeOnEscape="true">
+
+							<p:messages id="msgs-dialog" autoUpdate="true" />
+
+							<p:defaultCommand target="salvar-button" scope="tela-dialog" />
+
+							<h:panelGrid columns="2" id="painel-dialog">
+								<p:outputLabel value="Código" for="codigo" />
+								<p:inputText id="codigo" size="7" maxlength="10"
+									value="#{cadastroTelaBean.telaEdicao.codigo}" readonly="true" />
+
+								<p:outputLabel value="Descrição" for="descricao" />
+								<p:inputText id="descricao" size="50" maxlength="150"
+									value="#{cadastroTelaBean.telaEdicao.descricao}" />
+
+								<p:outputLabel value="Url" for="url" />
+								<p:inputText id="url" size="50" maxlength="150"
+									value="#{cadastroTelaBean.telaEdicao.url}" />
+
+								<p:outputLabel value="Tela Pai:" for="tela_pai" />
+								<p:selectOneMenu filter="true"
+									value="#{cadastroTelaBean.telaEdicao.telaPai}"
+									converter="omnifaces.SelectItemsConverter" id="tela_pai">
+									<f:selectItem noSelectionOption="true" itemLabel="Selecione" />
+									<f:selectItems value="#{cadastroTelaBean.todasTelas}"
+										var="tela" itemValue="#{tela}" itemLabel="#{tela.descricao}" />
+								</p:selectOneMenu>
+								<p:commandButton value="Salvar" id="salvar-button"
+									action="#{cadastroTelaBean.salvar}" process="tela-dialog"
+									update="msgs-dialog painel-dialog" />
+							</h:panelGrid>
+						</p:dialog>
+
+					</h:form>
+				</div>
+			</div>
+		</section>
+
+	</ui:define>
+</ui:composition>

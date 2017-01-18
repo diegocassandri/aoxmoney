@@ -1,0 +1,171 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="http://primefaces.org/ui"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroCidadeBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Cidade</ui:define>
+
+	<ui:param name="activeMenu" value="cadastros" />
+	
+	<ui:param name="activeSubMenu" value="cidade" />
+	
+	<ui:define name="descricao"> Cidade </ui:define>
+	
+	<ui:define name="breadcrumb">
+		<li class="active"> Cadastro Cidade</li>
+	</ui:define>
+
+	<ui:define name="corpo">
+		
+
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+			
+			<div class="box box-primary">
+				<div class="box-body">
+					<h:form id="frmCadastro">
+
+						<p:toolbar id="toolbar">
+							<f:facet name="left">
+								<p:commandButton value="Novo" icon="ui-icon-document"
+									action="#{cadastroCidadeBean.prepararNovoCadastro}"
+									process="@this" update="cidade-dialog"
+									oncomplete="PF('edicaoCidadeDialog').show()"
+									styleClass="btn btn-primary">
+									<p:resetInput target="cidade-dialog" />
+								</p:commandButton>
+
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+
+								<p:commandButton value="Alterar" icon="ui-icon-pencil" title="Editar"
+									process="@this" update="cidade-dialog"
+									oncomplete="PF('edicaoCidadeDialog').show()"
+									disabled="#{cadastroCidadeBean.cidadeSelecionado == null}"
+									styleClass="btn btn-primary">
+									<p:resetInput target="cidade-dialog" />
+
+									<f:setPropertyActionListener
+										value="#{cadastroCidadeBean.cidadeSelecionado}"
+										target="#{cadastroCidadeBean.cidadeEdicao}" />
+								</p:commandButton>
+
+								<p:commandButton  value="Excluir" icon="ui-icon-trash" title="Excluir"
+									process="@this" update="cidade-table msgs toolbar"
+									action="#{cadastroCidadeBean.excluir}" styleClass="btn btn-primary"
+									disabled="#{cadastroCidadeBean.cidadeSelecionado == null}"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+									<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir a cidade?" />
+
+								</p:commandButton>
+							</f:facet>
+
+						</p:toolbar>
+
+						<p:dataTable value="#{cadastroCidadeBean.todasCidades}"
+							var="cidade" emptyMessage="Nenhuma cidade cadastrada." rows="10"
+							paginator="true" paginatorPosition="bottom"
+							style="margin-top: 10px" id="cidade-table"
+							selection="#{cadastroCidadeBean.cidadeSelecionado}"
+							selectionMode="single" rowKey="#{cidade.codigo}"
+							filteredValue="#{cadastroCidadeBean.filtroCidades}"
+							widgetVar="tabelaCidade" reflow="true"
+							sortField="false">
+
+							<f:facet name="header">
+								<div align="left">
+									<p:outputPanel>
+										<p:inputText id="globalFilter"
+											onkeyup="PF('tabelaCidade').filter()" style="width:150px"
+											placeholder="Filtro" />
+									</p:outputPanel>
+								</div>
+							</f:facet>
+
+
+
+							<p:ajax event="rowSelect" update=":frmCadastro:toolbar" />
+							<p:ajax event="rowUnselect" update=":frmCadastro:toolbar" />
+
+							<p:column headerText="Código" sortBy="#{cidade.codigo}"
+								filterMatchMode="contains" filterBy="#{cidade.codigo}"
+								filterable="false">
+								<h:outputText value="#{cidade.codigo}" />
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{cidade.nome}"
+								filterMatchMode="contains" filterBy="#{cidade.nome}"
+								filterable="false">
+								<h:outputText value="#{cidade.nome}" />
+							</p:column>
+
+							<p:column headerText="Estado" sortBy="#{cidade.estado.nome}"
+								filterMatchMode="contains" filterBy="#{cidade.estado.nome}"
+								filterable="false">
+								<h:outputText value="#{cidade.estado.nome}" />
+								<h:outputText value=" - " />
+								<h:outputText value="#{cidade.estado.sigla}" />
+							</p:column>
+						</p:dataTable>
+
+						<p:dialog header="Cadastro cidade" widgetVar="edicaoCidadeDialog"
+							id="cidade-dialog" resizable="false" modal="true"
+							closeOnEscape="true"
+							styleClas="box box-primary">
+
+							<p:messages id="msgs-dialog" autoUpdate="true" />
+
+							<p:defaultCommand target="salvar-button" scope="cidade-dialog" />
+
+							<h:panelGrid columns="2" id="painel-dialog" cellspacing="10">
+								<p:outputLabel value="Código" for="codigo" />
+								<p:inputText id="codigo" size="7" maxlength="10"
+									value="#{cadastroCidadeBean.cidadeEdicao.codigo}"
+									readonly="true" />
+
+								<p:outputLabel value="Nome" for="nome" />
+								<p:inputText id="nome" size="20" maxlength="50"
+									value="#{cadastroCidadeBean.cidadeEdicao.nome}" />
+
+								<p:outputLabel value="Estado:" for="estado" />
+								<p:selectOneMenu filter="true"
+									value="#{cadastroCidadeBean.cidadeEdicao.estado}"
+								     required="true"
+									requiredMessage="O Campo Estado é obrigatório" id="estado">
+									<f:selectItem noSelectionOption="true"
+										itemLabel="Selecione um estado" />
+									<f:selectItems value="#{cadastroCidadeBean.todosEstados}"
+										var="estado" itemValue="#{estado}"
+										itemLabel="#{estado.nome} - #{estado.sigla}" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="Salvar" id="salvar-button"
+									action="#{cadastroCidadeBean.salvar}"
+									update="msgs-dialog painel-dialog" styleClass="btn btn-success"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()"/>
+							</h:panelGrid>
+						</p:dialog>
+
+					</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>

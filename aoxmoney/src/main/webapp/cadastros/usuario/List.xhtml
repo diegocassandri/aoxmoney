@@ -1,0 +1,121 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:coco="http://xmlns.jcp.org/jsf/composite/ui">
+
+	<f:metadata>
+		<f:viewAction action="#{cadastroUsuarioBean.consultar}" />
+	</f:metadata>
+
+	<ui:define name="titulo">Cadastro de Usuário</ui:define>
+
+	<ui:param name="activeMenu" value="config" />
+
+	<ui:param name="activeSubMenu" value="usuario" />
+
+	<ui:define name="corpo">
+		<section class="content-header">
+			<h1>
+				Cadastro <small> Usuário</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><i class="fa fa-dashboard"></i> <h:link
+						outcome="/Home.xhtml">
+					Dashboard
+				</h:link></li>
+
+
+				<li class="active">Cadastro Usuário</li>
+			</ol>
+		</section>
+
+		<!-- Main content -->
+		<section class="content">
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<p:messages id="msgs" closable="true" />
+				</div>
+			</div>
+
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h:form id="controlsForm" prependId="false">
+						<div class="box-tools pull-left">
+							<p:button immediate="true" value="Novo"
+								styleClass="btn btn-flat btn-info"
+								outcome="/usuario/Create.xhtml" onstart="PF('Loading').show()"
+								onsuccess="PF('Loading').hide()" />
+						</div>
+					</h:form>
+				</div>
+
+				<div jsf:id="boxBody" class="box-body">
+					<h:form>
+						<p:dataTable value="#{cadastroUsuarioBean.todosUsuarios}"
+							var="usuario" emptyMessage="Nenhum usuário cadastrado." rows="10"
+							paginator="true" paginatorPosition="bottom"
+							style="margin-top: 10px" id="grupo-usuario"
+							widgetVar="tabelaUsuario" reflow="true">
+
+							<f:facet name="header">
+								<div align="left">
+									<p:outputPanel>
+										<p:inputText id="globalFilter"
+											onkeyup="PF('tabelaUsuario').filter()" style="width:150px"
+											placeholder="Filtro" />
+									</p:outputPanel>
+								</div>
+							</f:facet>
+
+							<p:column headerText="Nome" sortBy="#{usuario.nomeCompleto}"
+								filterBy="#{usuario.nomeCompleto}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{usuario.nomeCompleto}" />
+							</p:column>
+
+							<p:column headerText="Usuário" sortBy="#{usuario.usuario}"
+								filterBy="#{usuario.usuario}" filterMatchMode="contains"
+								filterable="false">
+								<h:outputText value="#{usuario.usuario}" />
+							</p:column>
+							<p:column headerText="Email"
+								sortBy="#{usuario.email}" filterBy="#{usuario.email}"
+								filterMatchMode="contains" filterable="false">
+								<h:outputText value="#{usuario.email}" />
+							</p:column>
+							<p:column headerText="Status"
+								sortBy="#{usuario.status}">
+								<h:outputText value="#{usuario.status} " />
+							</p:column>
+							<p:column width="100">
+								<p:button icon="fa fa-edit" title="Editar"
+									styleClass="btn btn-flat btn-default" outcome="/usuario/Create"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+									<f:param name="id" value="#{usuario.codigo}" />
+								</p:button>
+								<p:commandButton icon="fa fa-close" update="@form"
+									process="@this" title="Excluir"
+									action="#{cadastroUsuarioBean.excluir}"
+									onstart="PF('Loading').show()" onsuccess="PF('Loading').hide()">
+
+									<f:setPropertyActionListener value="#{usuario}"
+										target="#{cadastroUsuarioBean.usuarioEdicao}" />
+
+									<p:confirm icon="ui-icon-alert"
+										header="Confirmação de exclusão"
+										message="Tem certeza que deseja excluir o Usuário?" />
+								</p:commandButton>
+
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+
+</ui:composition>
